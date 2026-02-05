@@ -1,0 +1,192 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "ReasonFlow",
+  "scopeName": "source.reasonflow",
+  "patterns": [
+    {
+      "include": "#value"
+    }
+  ],
+  "repository": {
+    "array": {
+      "begin": "\\[",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.array.begin.reasonflow"
+        }
+      },
+      "end": "\\]",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.array.end.reasonflow"
+        }
+      },
+      "name": "meta.structure.array.reasonflow",
+      "patterns": [
+        {
+          "include": "#value"
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.array.reasonflow"
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "begin": "/\\*\\*(?!/)",
+          "captures": {
+            "0": {
+              "name": "punctuation.definition.comment.reasonflow"
+            }
+          },
+          "end": "\\*/",
+          "name": "comment.block.documentation.reasonflow"
+        },
+        {
+          "begin": "/\\*",
+          "captures": {
+            "0": {
+              "name": "punctuation.definition.comment.reasonflow"
+            }
+          },
+          "end": "\\*/",
+          "name": "comment.block.reasonflow"
+        },
+        {
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.comment.reasonflow"
+            }
+          },
+          "match": "(//).*$\\n?",
+          "name": "comment.line.double-slash.reasonflow"
+        }
+      ]
+    },
+    "constant": {
+      "match": "\\b(?:true|false|null)\\b",
+      "name": "constant.language.reasonflow"
+    },
+    "number": {
+      "match": "(?x)        # turn on extended mode\n  -?        # an optional minus\n  (?:\n    0       # a zero\n    |       # ...or...\n    [1-9]   # a 1-9 character\n    \\d*     # followed by zero or more digits\n  )\n  (?:\n    (?:\n      \\.    # a period\n      \\d+   # followed by one or more digits\n    )?\n    (?:\n      [eE]  # an e character\n      [+-]? # followed by an option +/-\n      \\d+   # followed by one or more digits\n    )?      # make exponent optional\n  )?        # make decimal portion optional",
+      "name": "constant.numeric.reasonflow"
+    },
+    "object": {
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.dictionary.begin.reasonflow"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.dictionary.end.reasonflow"
+        }
+      },
+      "name": "meta.structure.dictionary.reasonflow",
+      "patterns": [
+        {
+          "include": "#objectkey"
+        },
+        {
+          "include": "#comments"
+        },
+        {
+          "begin": ":",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.separator.dictionary.key-value.reasonflow"
+            }
+          },
+          "end": "(,)|(?=\\})",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.separator.dictionary.pair.reasonflow"
+            }
+          },
+          "name": "meta.structure.dictionary.value.reasonflow",
+          "patterns": [
+            {
+              "include": "#value"
+            }
+          ]
+        }
+      ]
+    },
+    "string": {
+      "begin": "\"",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.reasonflow"
+        }
+      },
+      "end": "\"",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.end.reasonflow"
+        }
+      },
+      "name": "string.quoted.double.reasonflow",
+      "patterns": [
+        {
+          "match": "\\\\(?:[\"\\\\bfnrt/]|u[0-9a-fA-F]{4})",
+          "name": "constant.character.escape.reasonflow"
+        },
+        {
+          "match": "\\\\.",
+          "name": "invalid.illegal.unrecognized-string-escape.reasonflow"
+        },
+        {
+          "match": "\\{\\{[^}]+\\}\\}",
+          "name": "variable.other.reasonflow.template"
+        }
+      ]
+    },
+    "objectkey": {
+      "begin": "\"",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.support.type.property-name.begin.reasonflow"
+        }
+      },
+      "end": "\"",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.support.type.property-name.end.reasonflow"
+        }
+      },
+      "name": "string.reasonflow support.type.property-name.reasonflow",
+      "patterns": [
+        {
+          "match": "\\b(name|description|version|tasks|dependencies|input_schema|type|config|agent|agent_config|params|prompt|query|top_k|model|provider|temperature|max_tokens|db_path|db_type|embedding_provider|embedding_model|use_gpu|priority|metadata|from|to|required|default)\\b",
+          "name": "support.type.property-name.reasonflow keyword.other.reasonflow"
+        }
+      ]
+    },
+    "value": {
+      "patterns": [
+        {
+          "include": "#constant"
+        },
+        {
+          "include": "#number"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#array"
+        },
+        {
+          "include": "#object"
+        },
+        {
+          "include": "#comments"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "name": "DataPipeline",
+  "description": "Multi-stage data processing and analysis pipeline",
+  "version": "1.0.0",
+  "tasks": {
+    "ingest-data": {
+      "type": "data_retrieval",
+      "config": {
+        "agent_config": {
+          "db_path": "data_warehouse.index",
+          "db_type": "faiss",
+          "embedding_provider": "sentence_transformers",
+          "embedding_model": "all-mpnet-base-v2",
+          "use_gpu": false
+        },
+        "params": {
+          "query": "Retrieve relevant data for analysis",
+          "top_k": 20
+        }
+      }
+    },
+    "extract-insights": {
+      "type": "llm",
+      "config": {
+        "params": {
+          "prompt": "Extract key insights and patterns from this data:\n{{ingest-data.output}}\n\nProvide a structured list of findings.",
+          "model": "gpt-4o",
+          "provider": "openai",
+          "temperature": 0.5
+        }
+      }
+    },
+    "analyze-trends": {
+      "type": "llm",
+      "config": {
+        "params": {
+          "prompt": "Based on these insights:\n{{extract-insights.output}}\n\nAnalyze trends and patterns. Focus on:\n- Growth indicators\n- Risk factors\n- Opportunities",
+          "model": "gpt-4o",
+          "provider": "openai",
+          "temperature": 0.7
+        }
+      }
+    },
+    "generate-report": {
+      "type": "llm",
+      "config": {
+        "params": {
+          "prompt": "Create an executive summary report based on:\n\nTrends Analysis:\n{{analyze-trends.output}}\n\nFormat as a professional report with sections.",
+          "model": "gpt-4o",
+          "provider": "openai",
+          "temperature": 0.3,
+          "max_tokens": 2000
+        }
+      }
+    }
+  },
+  "dependencies": [
+    {
+      "from": "ingest-data",
+      "to": "extract-insights"
+    },
+    {
+      "from": "extract-insights",
+      "to": "analyze-trends"
+    },
+    {
+      "from": "analyze-trends",
+      "to": "generate-report"
+    }
+  ]
+}
