@@ -1,0 +1,49 @@
+{
+  "name": "DocumentQA",
+  "description": "Workflow that retrieves information from documents and answers questions",
+  "version": "1.0.0",
+  "tasks": {
+    "retrieve-context": {
+      "type": "data_retrieval",
+      "config": {
+        "agent_config": {
+          "db_path": "documents.index",
+          "db_type": "faiss",
+          "embedding_provider": "sentence_transformers",
+          "embedding_model": "all-MiniLM-L6-v2",
+          "use_gpu": false
+        },
+        "params": {
+          "query": "{{input.question}}",
+          "top_k": 5
+        }
+      }
+    },
+    "answer-question": {
+      "type": "llm",
+      "config": {
+        "params": {
+          "prompt": "Based on the following context, answer the question.\n\nContext: {{retrieve-context.output}}\n\nQuestion: {{input.question}}\n\nAnswer:",
+          "model": "gpt-4o",
+          "provider": "openai",
+          "temperature": 0.3,
+          "max_tokens": 500
+        }
+      }
+    }
+  },
+  "dependencies": [
+    {
+      "from": "retrieve-context",
+      "to": "answer-question"
+    }
+  ],
+  "input_schema": [
+    {
+      "name": "question",
+      "type": "string",
+      "required": true,
+      "description": "The question to answer"
+    }
+  ]
+}

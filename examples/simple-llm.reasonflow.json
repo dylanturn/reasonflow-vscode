@@ -1,0 +1,27 @@
+{
+  "name": "SimpleTextAnalysis",
+  "description": "A simple workflow that uses an LLM to analyze text",
+  "version": "1.0.0",
+  "tasks": {
+    "analyze-text": {
+      "type": "llm",
+      "config": {
+        "params": {
+          "prompt": "Analyze the following text and provide insights: {{input.text}}",
+          "model": "gpt-4o",
+          "provider": "openai",
+          "temperature": 0.7,
+          "max_tokens": 1000
+        }
+      }
+    }
+  },
+  "input_schema": [
+    {
+      "name": "text",
+      "type": "string",
+      "required": true,
+      "description": "The text to analyze"
+    }
+  ]
+}

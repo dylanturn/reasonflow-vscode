@@ -1,0 +1,189 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ReasonFlow Workflow Configuration",
+  "description": "Schema for ReasonFlow workflow configuration files",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the workflow"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the workflow"
+    },
+    "version": {
+      "type": "string",
+      "description": "Version of the workflow",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$"
+    },
+    "tasks": {
+      "type": "object",
+      "description": "Task definitions for the workflow",
+      "additionalProperties": {
+        "$ref": "#/definitions/task"
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "Task dependencies defining execution order",
+      "items": {
+        "$ref": "#/definitions/dependency"
+      }
+    },
+    "input_schema": {
+      "type": "array",
+      "description": "Input parameter definitions for the workflow",
+      "items": {
+        "$ref": "#/definitions/inputParam"
+      }
+    }
+  },
+  "required": ["tasks"],
+  "definitions": {
+    "task": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of task",
+          "enum": ["llm", "data_retrieval", "custom", "rag", "api", "agent"]
+        },
+        "config": {
+          "type": "object",
+          "description": "Task configuration",
+          "properties": {
+            "agent": {
+              "description": "Agent instance or configuration"
+            },
+            "agent_config": {
+              "type": "object",
+              "description": "Agent configuration parameters",
+              "properties": {
+                "db_path": {
+                  "type": "string",
+                  "description": "Path to vector database"
+                },
+                "db_type": {
+                  "type": "string",
+                  "description": "Vector database type",
+                  "enum": ["faiss", "pinecone", "milvus", "qdrant", "weaviate"]
+                },
+                "embedding_provider": {
+                  "type": "string",
+                  "description": "Embedding provider",
+                  "enum": ["sentence_transformers", "openai", "huggingface"]
+                },
+                "embedding_model": {
+                  "type": "string",
+                  "description": "Embedding model name"
+                },
+                "use_gpu": {
+                  "type": "boolean",
+                  "description": "Whether to use GPU acceleration"
+                }
+              }
+            },
+            "params": {
+              "type": "object",
+              "description": "Task-specific parameters",
+              "properties": {
+                "prompt": {
+                  "type": "string",
+                  "description": "LLM prompt template (supports {{task-id.output}} interpolation)"
+                },
+                "query": {
+                  "type": "string",
+                  "description": "Query for data retrieval tasks"
+                },
+                "top_k": {
+                  "type": "integer",
+                  "description": "Number of top results to retrieve",
+                  "minimum": 1
+                },
+                "model": {
+                  "type": "string",
+                  "description": "Model name for LLM tasks"
+                },
+                "provider": {
+                  "type": "string",
+                  "description": "LLM provider",
+                  "enum": ["openai", "groq", "ollama", "anthropic", "reasonchain"]
+                },
+                "temperature": {
+                  "type": "number",
+                  "description": "Temperature for LLM generation",
+                  "minimum": 0,
+                  "maximum": 2
+                },
+                "max_tokens": {
+                  "type": "integer",
+                  "description": "Maximum tokens for LLM generation",
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Task priority (higher executes first)",
+          "minimum": 0
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional task metadata"
+        },
+        "dependencies": {
+          "type": "array",
+          "description": "List of task IDs this task depends on",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["type", "config"]
+    },
+    "dependency": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "string",
+          "description": "Source task ID"
+        },
+        "to": {
+          "type": "string",
+          "description": "Target task ID"
+        }
+      },
+      "required": ["from", "to"]
+    },
+    "inputParam": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Parameter name"
+        },
+        "type": {
+          "type": "string",
+          "description": "Parameter type",
+          "enum": ["string", "number", "boolean", "object", "array"]
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this parameter is required",
+          "default": false
+        },
+        "default": {
+          "description": "Default value for the parameter"
+        },
+        "description": {
+          "type": "string",
+          "description": "Parameter description"
+        }
+      },
+      "required": ["name", "type"]
+    }
+  }
+}
